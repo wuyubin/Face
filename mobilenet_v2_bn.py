@@ -1,9 +1,5 @@
 import mxnet as mx
 
-'''
-        A MXNET implementation of mobilenetv2
-    use relu as Activation layer rather than relu6
-'''
 
 def inverted_residual_unit(data, num_filter_input, num_filter_output, name, use_shortcut=True, stride=1,
                            expansion_rate=1, bn_mom=0.9, workspace=256):
@@ -49,22 +45,13 @@ def get_symbol(num_classes=256, **kwargs):
                 body = inverted_residual_unit(body, filter_num_inputs[stage_num], filter_num_outputs[stage_num], \
                                               'stage%d_level%d' % (stage_num + 2, level_num + 1), expansion_rate=6)
     stage8 = mx.sym.Convolution(data=body, num_filter=1280, kernel=(1, 1), no_bias=True, name='stage8_pointwise_kernel')
-    # flat = mx.symbol.Flatten(data=stage8)
-    # fc1 = mx.sym.FullyConnected(data=flat, num_hidden=num_classes, name='pre_fc1', no_bias=True)
-
-
-    # flatten = mx.sym.Flatten(body)
-    # # body = mx.sym.BatchNorm(data=body, fix_gamma=False, eps=2e-5, momentum=bn_mom, name='bn1')
-    # fc1 = mx.sym.FullyConnected(data=flatten, num_hidden=num_classes, name='pre_fc1', no_bias=True)
-
+  
 
     gpool = mx.symbol.Pooling(data=stage8, pool_type='avg', kernel=(7, 7),
                               global_pool=True, name='global_pool')
     flat = mx.symbol.Flatten(data=gpool)
     fc1 = mx.sym.FullyConnected(data=flat, num_hidden=num_classes, name='pre_fc1', no_bias=True)
-    # dropout = mx.symbol.Dropout(flat, p=0.3)
-    # conv8 = mx.symbol.Convolution(data=dropout, num_filter=num_classes, kernel=(1, 1), name='fc')
-    # softmax = mx.symbol.SoftmaxOutput(data=flat, name='softmax')
+
 
 
     return fc1
