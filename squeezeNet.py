@@ -1,6 +1,5 @@
 # conding:utf-8
 
-# import find_mxnet
 import mxnet as mx
 
 
